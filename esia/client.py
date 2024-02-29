@@ -188,6 +188,7 @@ class EsiaAuth(object):
             params['timestamp'],
             params['state'],
             self.settings.private_key_file,
+            self.settings.certificate_file,
             'signature.p7'
         )
         print(params['client_secret'])
