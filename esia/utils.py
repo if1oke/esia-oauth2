@@ -27,6 +27,7 @@ def make_secret(
         state: str,
 ) -> str:
     base_string = f'{scope}{timestamp}{client_id}{state}'
+    print(base_string)
     return hmac.new(
         secret_key.encode('utf-8'),
         base_string.encode('utf-8'),
