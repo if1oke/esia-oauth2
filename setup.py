@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name='esia-oauth2',
-    version='1.0.2',
+    version='1.0.2a',
     description=(
         'ESIA OAuth2 Connector. Based on esia-connector '
         '[https://github.com/eigenmethod/esia-connector/]'),

@@ -24,7 +24,7 @@ from jwt.exceptions import InvalidTokenError
 from .exceptions import (
     ConfigFileError, CryptoBackendError, IncorrectMarkerError)
 
-from .utils import get_timestamp, make_request, sign_params
+from .utils import get_timestamp, make_request, sign_params, make_secret
 
 
 class EsiaSettings(object):
@@ -180,6 +180,24 @@ class EsiaAuth(object):
         params = sign_params(
             params, self.settings,
             backend=self.settings.crypto_backend)
+
+        print(self.settings.private_key_file)
+        print(
+            make_secret(
+                self.settings.private_key_file,
+                self.settings.esia_client_id,
+                self.settings.esia_scope,
+                params['timestamp'],
+                params['state']
+            )
+        )
+        params['client_secret'] = make_secret(
+            self.settings.private_key_file,
+            self.settings.esia_client_id,
+            self.settings.esia_scope,
+            params['timestamp'],
+            params['state']
+        )
 
         # sorted needed to make uri deterministic for tests.
         params = urlencode(sorted(params.items()))

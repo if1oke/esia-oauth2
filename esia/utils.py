@@ -6,15 +6,32 @@
 # Copyright (c) 2015, Septem Capital
 import base64
 import datetime
+import hashlib
 import json
 import os
 import tempfile
+import hmac
 
 import pytz
 
 import requests
 
 from .exceptions import CryptoBackendError, HttpError, IncorrectJsonError
+
+
+def make_secret(
+        secret_key: str,
+        client_id: str,
+        scope: str,
+        timestamp: str,
+        state: str,
+) -> str:
+    base_string = f'{scope}{timestamp}{client_id}{state}'
+    return hmac.new(
+        secret_key.encode('utf-8'),
+        base_string.encode('utf-8'),
+        hashlib.sha256
+    ).hexdigest()
 
 
 def make_request(url, method='GET', headers=None, data=None, verify=True):
