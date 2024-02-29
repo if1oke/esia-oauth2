@@ -15,6 +15,9 @@ import hmac
 import pytz
 
 import requests
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding, utils
+from cryptography.hazmat.primitives.serialization import pkcs7
 
 from .exceptions import CryptoBackendError, HttpError, IncorrectJsonError
 
@@ -33,6 +36,24 @@ def make_secret(
         base_string.encode('utf-8'),
         hashlib.sha256
     ).hexdigest()
+
+
+def create_signature(
+        client_id: str,
+        scope: str,
+        timestamp: str,
+        state: str,
+        private_key,
+        signature_file
+):
+    message = f'{scope}{timestamp}{client_id}{state}'
+    signature = private_key.sign(
+        message.encode(),
+        padding.PKCS1v15(),
+        utils.Prehashed(hashes.SHA256())
+    )
+
+    return pkcs7.PKCS7SignatureBuilder().add_data(signature).finalize()
 
 
 def make_request(url, method='GET', headers=None, data=None, verify=True):
