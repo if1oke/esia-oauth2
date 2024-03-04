@@ -24,7 +24,7 @@ from jwt.exceptions import InvalidTokenError
 from .exceptions import (
     ConfigFileError, CryptoBackendError, IncorrectMarkerError)
 
-from .utils import get_timestamp, make_request, sign_params, make_secret, create_signature
+from .utils import get_timestamp, make_request, sign_params
 
 
 class EsiaSettings(object):
