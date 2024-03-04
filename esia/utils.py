@@ -23,47 +23,6 @@ from cryptography.hazmat.primitives.serialization import pkcs7
 from .exceptions import CryptoBackendError, HttpError, IncorrectJsonError
 
 
-def make_secret(
-        secret_key: str,
-        client_id: str,
-        scope: str,
-        timestamp: str,
-        state: str,
-) -> str:
-    base_string = f'{scope}{timestamp}{client_id}{state}'
-    print(base_string)
-    return hmac.new(
-        secret_key.encode('utf-8'),
-        base_string.encode('utf-8'),
-        hashlib.sha256
-    ).hexdigest()
-
-
-def create_signature(
-        client_id: str,
-        scope: str,
-        timestamp: str,
-        state: str,
-        private_key: str,
-        cert: str,
-        signature_file
-):
-    message = f'{scope}{timestamp}{client_id}{state}'
-    with open(cert) as cert_file:
-        cert_buf = cert_file.read()
-    with open(private_key) as key_file:
-        key_buf = key_file.read()
-    pkey = crypto.load_privatekey(crypto.FILETYPE_PEM, key_buf)
-    signcert = crypto.load_certificate(crypto.FILETYPE_PEM, cert_buf)
-    bio_in = crypto._new_mem_buf(message.encode())
-    PKCS7_NOSIGS = 0x4  # defined in pkcs7.h
-    pkcs7 = crypto._lib.PKCS7_sign(signcert._x509, pkey._pkey, crypto._ffi.NULL, bio_in, PKCS7_NOSIGS)  # noqa
-    bio_out = crypto._new_mem_buf()
-    crypto._lib.i2d_PKCS7_bio(bio_out, pkcs7)
-    sigbytes = crypto._bio_to_string(bio_out)
-    return sigbytes
-
-
 def make_request(url, method='GET', headers=None, data=None, verify=True):
     """
     Выполняет запрос по заданному URL и возвращает dict на основе JSON-ответа

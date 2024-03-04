@@ -181,17 +181,8 @@ class EsiaAuth(object):
             params, self.settings,
             backend=self.settings.crypto_backend)
 
-        print(self.settings.private_key_file)
-        params['client_secret'] = create_signature(
-            self.settings.esia_client_id,
-            self.settings.esia_scope,
-            params['timestamp'],
-            params['state'],
-            self.settings.private_key_file,
-            self.settings.certificate_file,
-            'signature.p7'
-        )
-        print(params['client_secret'])
+        print(f'Settings: {self.settings}')
+        print(f'Signed params: {params}')
 
         # sorted needed to make uri deterministic for tests.
         params = urlencode(sorted(params.items()))
